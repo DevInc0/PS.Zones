@@ -81,7 +81,7 @@ namespace PS.Zones.Main
                 {
                     string zoneName = parameters[2];
 
-                    if(Instance.Context.RemoveZoneByName(zoneName) == false)
+                    if (Instance.Context.RemoveZoneByName(zoneName) == false)
                     {
                         SayTo(sender, $"<color=green>Zone named</color> {zoneName} <color=green>has been deleted successfully!</color>");
                         return;
