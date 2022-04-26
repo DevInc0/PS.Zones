@@ -31,6 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Extensions\Vector3Extensions.cs" />
+    <Compile Include="Main\Commands.cs" />
     <Compile Include="Main\Configuration.cs" />
     <Compile Include="Main\DBContext.cs" />
     <Compile Include="Main\EventHandlers.cs" />

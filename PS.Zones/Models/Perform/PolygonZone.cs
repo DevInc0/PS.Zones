@@ -50,7 +50,7 @@ namespace PS.Zones.Models.Perform
 
         public PolygonZone(string name) : base(name) { }
 
-        public void AddPoint(Vector3 position)
+        internal void AddPoint(Vector3 position)
         {
             var currentPointsCount = _path.PointCount;
             PointF[] currentPoints = _path.PathPoints;

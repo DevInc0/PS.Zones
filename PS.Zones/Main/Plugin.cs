@@ -35,9 +35,11 @@ namespace PS.Zones.Main
             {
                 yield return new WaitForFrames(UPDATE_PER_FRAMES);
 
+                IReadOnlyList<Zone> zones = Instance.Context.Zones;
+
                 foreach (UnturnedPlayer unturnedPlayer in Instance._players)
                 {
-                    foreach (Zone zone in Instance.Context.zones)
+                    foreach (Zone zone in zones)
                     {
                         zone.UpdatePlayerPosition(unturnedPlayer);
                     }
