@@ -99,7 +99,7 @@ namespace PS.Zones.Models.Perform
         /// </summary>
         /// <param name="unturnedPlayer"></param>
         /// <returns>true if the player is inside the zone, otherwise false</returns>
-        public bool IsPlayerInside(CSteamID steamID) => IsPlayerInside((ulong)steamID);
+        public bool IsPlayerInside(CSteamID steamID) => IsPlayerInside((ulong)steamID);        
 
         private void AddPlayer(UnturnedPlayer unturnedPlayer)
         {

@@ -9,7 +9,9 @@ namespace PS.Zones.Main
 {
     public sealed partial class Plugin
     {
-        #region /zones
+        // TODO: Add commands explanation file
+
+        #region /zones        
 
         [RocketCommand(Name: "zones", Help: "", Syntax: "", AllowedCaller.Player)]
         [RocketCommandPermission("zones")]
@@ -72,6 +74,20 @@ namespace PS.Zones.Main
                     }
 
                     SayTo(sender, "<color=yellow>The selected zone is not polygonal!</color>");
+                    return;
+                }
+
+                if (message.Contains("remove zone"))
+                {
+                    string zoneName = parameters[2];
+
+                    if(Instance.Context.RemoveZoneByName(zoneName) == false)
+                    {
+                        SayTo(sender, $"<color=green>Zone named</color> {zoneName} <color=green>has been deleted successfully!</color>");
+                        return;
+                    }
+
+                    SayTo(sender, $"<color=yellow>There's no zone with name</color> {zoneName}");
                     return;
                 }
 
