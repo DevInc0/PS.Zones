@@ -13,6 +13,7 @@ namespace PS.Zones.Models.Perform
         // TODO: Code refactoring. 
         // Block frames position update override.
         // In case if zone will update position only one time (like using commands, timers, etc.)
+        // Also should move events and zones (from DBContext) to another class (for example Zones.Events and Zones.Instance)
 
         public static event Action<Zone, UnturnedPlayer> OnPlayerEntered_Global;
 
