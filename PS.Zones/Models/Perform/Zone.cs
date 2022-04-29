@@ -10,6 +10,10 @@ namespace PS.Zones.Models.Perform
     [Serializable]
     public abstract class Zone
     {
+        // TODO: Code refactoring. 
+        // Block frames position update override.
+        // In case if zone will update position only one time (like using commands, timers, etc.)
+
         public static event Action<Zone, UnturnedPlayer> OnPlayerEntered_Global;
 
         public static event Action<Zone, UnturnedPlayer> OnPlayerExited_Global;
