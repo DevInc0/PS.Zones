@@ -74,7 +74,6 @@ namespace PS.Zones.Models.Perform
         /// <summary>
         /// Adds a player to InsidePlayers if he is inside the zone, otherwise removes
         /// </summary>
-        /// <param name="unturnedPlayer"></param>
         /// <returns>true if the player is inside the zone, otherwise false</returns>
         public bool UpdatePlayerPosition(UnturnedPlayer unturnedPlayer)
         {
@@ -95,16 +94,14 @@ namespace PS.Zones.Models.Perform
         /// <summary>
         /// Faster way, than InsidePlayers.Contains(unturnedPlayer), to find out if a player is inside the zone, because of using HashSet
         /// </summary>
-        /// <param name="unturnedPlayer"></param>
         /// <returns>true if the player is inside the zone, otherwise false</returns>
-        public bool IsPlayerInside(UnturnedPlayer unturnedPlayer) => IsPlayerInside((ulong)unturnedPlayer.CSteamID);
+        public bool IsPlayerInside(UnturnedPlayer unturnedPlayer) => IsPlayerInside((ulong)unturnedPlayer.CSteamID);        
 
-        /// <summary>
-        /// Faster way, than InsidePlayers.Contains(unturnedPlayer), to find out if a player is inside the zone, because of using HashSet
-        /// </summary>
-        /// <param name="unturnedPlayer"></param>
-        /// <returns>true if the player is inside the zone, otherwise false</returns>
+        /// <inheritdoc cref="IsPlayerInside(UnturnedPlayer)"/>
         public bool IsPlayerInside(CSteamID steamID) => IsPlayerInside((ulong)steamID);
+
+        /// <inheritdoc cref="IsPlayerInside(UnturnedPlayer)"/>>        
+        public bool IsPlayerInside(ulong steam64) => InsidePlayersSteam64.Contains(steam64);
 
         private void AddPlayer(UnturnedPlayer unturnedPlayer)
         {
@@ -132,8 +129,6 @@ namespace PS.Zones.Models.Perform
             OnPlayerExited_Global?.TryInvoke($"{nameof(OnPlayerExited_Global)} | {unturnedPlayer.CSteamID}", this, unturnedPlayer);
 
             OnPlayerExited?.TryInvoke($"{nameof(OnPlayerExited)} | {unturnedPlayer.CSteamID}", unturnedPlayer);
-        }
-
-        private bool IsPlayerInside(ulong steam64) => InsidePlayersSteam64.Contains(steam64);
+        }        
     }
 }
