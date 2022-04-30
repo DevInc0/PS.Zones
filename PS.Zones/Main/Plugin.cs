@@ -11,7 +11,9 @@ namespace PS.Zones.Main
     {
         public const int UPDATE_PER_FRAMES = 15;
 
-        public Plugin Instance { get; private set; }
+        public static Plugin Instance { get; private set; }
+
+        public static DBContext DataContext => Instance.Context;
 
         private readonly List<UnturnedPlayer> _players = new List<UnturnedPlayer>();
 
@@ -35,7 +37,7 @@ namespace PS.Zones.Main
             {
                 yield return new WaitForFrames(UPDATE_PER_FRAMES);
 
-                IReadOnlyList<Zone> zones = Instance.Context.Zones;
+                IReadOnlyList<Zone> zones = PSZones.Instance;
 
                 foreach (UnturnedPlayer unturnedPlayer in Instance._players)
                 {

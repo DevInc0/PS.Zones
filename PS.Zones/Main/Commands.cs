@@ -59,7 +59,7 @@ namespace PS.Zones.Main
                 {
                     var zoneName = parameters[2];
 
-                    if (Instance.Context.TryGetZoneByName(zoneName, out Zone zone) == false)
+                    if (PSZones.TryGetZoneByName(zoneName, out Zone zone) == false)
                     {
                         SayTo(sender, $"<color=yellow>There's no zone with name</color> {zoneName}");
                         return;
@@ -95,7 +95,7 @@ namespace PS.Zones.Main
                 {
                     string zoneName = parameters[1];
 
-                    if (Instance.Context.TryGetZoneByName(zoneName, out Zone zone) == false)
+                    if (PSZones.TryGetZoneByName(zoneName, out Zone zone) == false)
                     {
                         SayTo(sender, $"<color=yellow>There's no zone with name</color> {zoneName}");
                         return;

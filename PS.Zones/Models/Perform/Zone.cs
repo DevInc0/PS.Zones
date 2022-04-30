@@ -3,6 +3,7 @@ using SDG.Unturned;
 using Steamworks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PS.Zones.Models.Perform
@@ -10,15 +11,6 @@ namespace PS.Zones.Models.Perform
     [Serializable]
     public abstract class Zone
     {
-        // TODO: Code refactoring. 
-        // Block frames position update override.
-        // In case if zone will update position only one time (like using commands, timers, etc.)
-        // Also should move events and zones (from DBContext) to another class (for example Zones.Events and Zones.Instance)
-
-        public static event Action<Zone, UnturnedPlayer> OnPlayerEntered_Global;
-
-        public static event Action<Zone, UnturnedPlayer> OnPlayerExited_Global;
-
         public event Action<UnturnedPlayer> OnPlayerEntered;
 
         public event Action<UnturnedPlayer> OnPlayerExited;
@@ -29,57 +21,33 @@ namespace PS.Zones.Models.Perform
             protected set => _name = value;
         }
 
-        public List<CSteamID> InsidePlayersSteamID
-        {
-            get
-            {
-                var result = new List<CSteamID>();
+        public List<CSteamID> InsidePlayers => InsidePlayersSteamIDs.ToList();
 
-                foreach (ulong steam64 in InsidePlayersSteam64)
-                {
-                    result.Add((CSteamID)steam64);
-                }
+        /// <summary>
+        /// Verifying if zone should update players positions periodically        
+        /// </summary>        
+        protected virtual bool ShouldUpdatePlayersPositions => true;
 
-                return result;
-            }
-        }
-
-        public List<UnturnedPlayer> InsidePlayers
-        {
-            get
-            {
-                var result = new List<UnturnedPlayer>();
-
-                foreach (ulong steam64 in InsidePlayersSteam64)
-                {
-                    var unturnedPlayer = UnturnedPlayer.FromCSteamID((CSteamID)steam64);
-
-                    result.Add(unturnedPlayer);
-                }
-
-                return result;
-            }
-        }
-
-        protected readonly HashSet<ulong> InsidePlayersSteam64;
+        protected readonly HashSet<CSteamID> InsidePlayersSteamIDs;
 
         private string _name;
 
         public Zone(string name)
         {
             _name = name;
-            InsidePlayersSteam64 = new HashSet<ulong>();
+            InsidePlayersSteamIDs = new HashSet<CSteamID>();
         }
 
+        public abstract bool IsPositionInside(Vector3 position);
+
         /// <summary>
-        /// Adds a player to InsidePlayers if he is inside the zone, otherwise removes
+        /// Adds a player to <see cref="InsidePlayers"/> if he is inside the zone, otherwise removes        
+        /// <para> Won't be called at all if <see cref="ShouldUpdatePlayersPositions"/> set to <see langword="false"/> </para>
         /// </summary>
-        /// <returns>true if the player is inside the zone, otherwise false</returns>
+        /// <returns><see langword="true"/> if the player is inside the zone, otherwise <see langword="false"/></returns>
         public bool UpdatePlayerPosition(UnturnedPlayer unturnedPlayer)
         {
-            bool isInside = IsPositionInside(unturnedPlayer.Position);
-
-            if (isInside)
+            if (IsPositionInside(unturnedPlayer.Position))
             {
                 AddPlayer(unturnedPlayer);
                 return true;
@@ -89,46 +57,46 @@ namespace PS.Zones.Models.Perform
             return false;
         }
 
-        public abstract bool IsPositionInside(Vector3 position);
-
         /// <summary>
-        /// Faster way, than InsidePlayers.Contains(unturnedPlayer), to find out if a player is inside the zone, because of using HashSet
+        /// Faster way, than <see cref="InsidePlayers"/>, to find out if a player is inside the zone, because of using <see cref="HashSet{T}"/>
         /// </summary>
-        /// <returns>true if the player is inside the zone, otherwise false</returns>
-        public bool IsPlayerInside(UnturnedPlayer unturnedPlayer) => IsPlayerInside((ulong)unturnedPlayer.CSteamID);        
-
-        /// <inheritdoc cref="IsPlayerInside(UnturnedPlayer)"/>
-        public bool IsPlayerInside(CSteamID steamID) => IsPlayerInside((ulong)steamID);
-
-        /// <inheritdoc cref="IsPlayerInside(UnturnedPlayer)"/>>        
-        public bool IsPlayerInside(ulong steam64) => InsidePlayersSteam64.Contains(steam64);
+        /// <returns>
+        /// <see langword="true"/> if the player is inside the zone, otherwise <see langword="false"/>
+        /// <para> Converts to <see cref="IsPositionInside(Vector3)"/> where <see cref="Vector3"/> is <see cref="UnturnedPlayer.Position"/> if <see cref="ShouldUpdatePlayersPositions"/> set to <see langword="false"/> </para>
+        /// </returns>
+        public bool IsPlayerInside(UnturnedPlayer unturnedPlayer)
+        {
+            return ShouldUpdatePlayersPositions ? InsidePlayersSteamIDs.Contains(unturnedPlayer.CSteamID) : IsPositionInside(unturnedPlayer.Position);
+        }
 
         private void AddPlayer(UnturnedPlayer unturnedPlayer)
         {
-            var steam64 = (ulong)unturnedPlayer.CSteamID;
-
-            if (InsidePlayersSteam64.Add(steam64)) InvokeOnPlayerEntered(unturnedPlayer);
+            if (InsidePlayersSteamIDs.Add(unturnedPlayer.CSteamID))
+            {
+                InvokeOnPlayerEntered(unturnedPlayer);
+            }
         }
 
         private void RemovePlayer(UnturnedPlayer unturnedPlayer)
         {
-            var steam64 = (ulong)unturnedPlayer.CSteamID;
-
-            if (InsidePlayersSteam64.Remove(steam64)) InvokeOnPlayerExited(unturnedPlayer);
+            if (InsidePlayersSteamIDs.Remove(unturnedPlayer.CSteamID))
+            {
+                InvokeOnPlayerExited(unturnedPlayer);
+            }
         }
 
         private void InvokeOnPlayerEntered(UnturnedPlayer unturnedPlayer)
         {
-            OnPlayerEntered_Global?.TryInvoke($"{nameof(OnPlayerEntered_Global)} | {unturnedPlayer.CSteamID}", this, unturnedPlayer);
+            PSZones.Events.InternalInvokeOnPlayerEntered(this, unturnedPlayer);
 
-            OnPlayerEntered?.TryInvoke($"{nameof(OnPlayerEntered)} | {unturnedPlayer.CSteamID}", unturnedPlayer);
+            OnPlayerEntered?.TryInvoke($"{nameof(OnPlayerEntered)} | {Name} | {unturnedPlayer.CSteamID}", unturnedPlayer);
         }
 
         private void InvokeOnPlayerExited(UnturnedPlayer unturnedPlayer)
         {
-            OnPlayerExited_Global?.TryInvoke($"{nameof(OnPlayerExited_Global)} | {unturnedPlayer.CSteamID}", this, unturnedPlayer);
+            PSZones.Events.InternalInvokeOnPlayerExited(this, unturnedPlayer);
 
-            OnPlayerExited?.TryInvoke($"{nameof(OnPlayerExited)} | {unturnedPlayer.CSteamID}", unturnedPlayer);
-        }        
+            OnPlayerExited?.TryInvoke($"{nameof(OnPlayerExited)} | {Name} | {unturnedPlayer.CSteamID}", unturnedPlayer);
+        }
     }
 }
