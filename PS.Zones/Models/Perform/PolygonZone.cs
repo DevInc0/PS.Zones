@@ -8,7 +8,7 @@ using Point = PS.Zones.Models.Data.Point;
 namespace PS.Zones.Models.Perform
 {
     [Serializable]
-    public sealed class PolygonZone : Zone
+    public class PolygonZone : Zone
     {
         private Point[] _points;
 

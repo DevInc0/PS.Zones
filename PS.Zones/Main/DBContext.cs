@@ -6,7 +6,7 @@ namespace PS.Zones.Main
 {
     [Serializable]
     public sealed class DBContext
-    {
+    {        
         internal bool TryAddZone(Zone newZone)
         {
             if (Zones.Exists(z => z.Name == newZone.Name)) return false;

@@ -5,7 +5,7 @@ using Point = PS.Zones.Models.Data.Point;
 namespace PS.Zones.Models.Perform
 {
     [Serializable]
-    public sealed class RoundZone : Zone
+    public class RoundZone : Zone
     {
         public Point Center
         {
