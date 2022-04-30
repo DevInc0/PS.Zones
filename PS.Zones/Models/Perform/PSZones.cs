@@ -13,7 +13,7 @@ namespace PS.Zones.Models.Perform
 
         public static bool TryAddZone(Zone newZone)
         {
-            if(Plugin.DataContext.Zones.Exists(z => z.Name == newZone.Name)) return false;
+            if (Plugin.DataContext.Zones.Exists(z => z.Name == newZone.Name)) return false;
 
             Plugin.DataContext.Zones.Add(newZone);
             return true;
@@ -21,7 +21,7 @@ namespace PS.Zones.Models.Perform
 
         public static bool RemoveZone(Zone zone)
         {
-            if(zone == default) throw new ArgumentNullException(nameof(zone));
+            if (zone == default) throw new ArgumentNullException(nameof(zone));
 
             return Plugin.DataContext.Zones.Remove(zone);
         }
