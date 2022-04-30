@@ -21,6 +21,8 @@ namespace PS.Zones.Main
         {
             Instance = this;
 
+            PSZones.Init();
+
             StartCoroutine(PositionUpdater());
         }
 
