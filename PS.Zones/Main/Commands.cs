@@ -45,7 +45,7 @@ namespace PS.Zones.Main
                         default: throw new ArgumentException();
                     }
 
-                    if (Instance.Context.TryAddZone(newZone) == false)
+                    if (PSZones.TryAddZone(newZone) == false)
                     {
                         SayTo(sender, $"<color=yellow>There's already a zone with the name</color> {zoneName}");
                         return;
@@ -81,7 +81,7 @@ namespace PS.Zones.Main
                 {
                     string zoneName = parameters[2];
 
-                    if (Instance.Context.RemoveZoneByName(zoneName) == false)
+                    if (PSZones.RemoveZoneByName(zoneName) == false)
                     {
                         SayTo(sender, $"<color=green>Zone named</color> {zoneName} <color=green>has been deleted successfully!</color>");
                         return;
