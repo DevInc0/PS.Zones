@@ -9,6 +9,8 @@ namespace PS.Zones.Main
 {
     public sealed partial class Plugin : Plugin<DBContext, Configuration>
     {
+        // TODO: Check zone for ShouldUpdatePlayersPositions
+        // Also should add parallel foreach for better performance
         public const int UPDATE_PER_FRAMES = 15;
 
         public static Plugin Instance { get; private set; }
